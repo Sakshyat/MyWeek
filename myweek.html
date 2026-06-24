@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Week">
+<meta name="theme-color" content="#27500A">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj4KICA8cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMjc1MDBBIi8+CiAgPHRleHQgeD0iOTAiIHk9IjExNSIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI0MwREQ5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VzwvdGV4dD4KPC9zdmc+">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Week">
+
+<title>My Week</title>
+<style>
+:root{
+  --bg:#f9f9f7;--bg2:#f0efe9;--bg3:#e8e7e0;
+  --text:#1a1a18;--text2:#5a5a55;--text3:#8a8a84;
+  --border:#d8d7ce;--border2:#c8c7be;
+  --green:#27500A;--green-light:#EAF3DE;--green-mid:#C0DD97;--green-dark:#173404;
+  --blue:#0C447C;--blue-light:#E6F1FB;--blue-mid:#B5D4F4;
+  --purple:#3C3489;--purple-light:#EEEDFE;--purple-mid:#CECBF6;
+  --amber:#633806;--amber-light:#FAEEDA;--amber-mid:#FAC775;
+  --teal:#085041;--teal-light:#E1F5EE;--teal-mid:#9FE1CB;
+  --coral:#712B13;--coral-light:#FAECE7;--coral-mid:#F5C4B3;
+  --pink:#72243E;--pink-light:#FBEAF0;--pink-mid:#F4C0D1;
+  --red:#791F1F;--red-light:#FCEBEB;
+  --radius:12px;--radius-sm:8px;--radius-pill:20px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a18;--bg2:#242422;--bg3:#2e2e2b;
+    --text:#f0efe9;--text2:#a0a09a;--text3:#606058;
+    --border:#38382e;--border2:#484840;
+    --green-light:#173404;--green-mid:#27500A;--green-dark:#C0DD97;
+    --blue-light:#042C53;--blue-mid:#0C447C;
+    --purple-light:#26215C;--purple-mid:#3C3489;
+    --amber-light:#412402;--amber-mid:#633806;
+    --teal-light:#04342C;--teal-mid:#085041;
+    --coral-light:#4A1B0C;--coral-mid:#712B13;
+    --pink-light:#4B1528;--pink-mid:#72243E;
+    --red-light:#501313;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* Header */
+.header{padding:env(safe-area-inset-top,12px) 16px 12px;background:var(--green);color:#fff;flex-shrink:0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding-top:8px}
+.header h1{font-size:20px;font-weight:600;letter-spacing:-.3px}
+.header-day{font-size:13px;opacity:.8}
+
+/* Bottom nav */
+.bottom-nav{display:flex;background:var(--bg);border-top:0.5px solid var(--border);padding:8px 0 env(safe-area-inset-bottom,8px);flex-shrink:0}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;background:none;border:none;color:var(--text2);font-size:9px;font-weight:500;cursor:pointer;transition:color .15s}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn.active{color:var(--green)}
+
+/* Scroll area */
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;padding:12px 14px 24px;display:none;-webkit-overflow-scrolling:touch}
+.screen.active{display:block}
+
+/* Day tabs */
+.day-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.dt{padding:5px 11px;border-radius:var(--radius-pill);border:0.5px solid var(--border2);font-size:12px;font-weight:500;cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .15s}
+.dt.active{background:var(--green);color:#fff;border-color:var(--green)}
+.dt.brutal{border-color:#D85A30;color:#993C1D}
+.dt.brutal.active{background:#712B13;color:#F5C4B3;border-color:#712B13}
+.dt.cheat.active{background:var(--purple);color:var(--purple-mid);border-color:var(--purple)}
+
+/* Cards */
+.card{border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;background:var(--bg)}
+.card-head{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg2);border-bottom:0.5px solid var(--border)}
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
+.card-title{font-size:13px;font-weight:500;flex:1;line-height:1.3}
+.card-cal{font-size:11px;color:var(--text2);white-space:nowrap}
+.card-body{padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.item{font-size:13px;line-height:1.5}
+.item small{color:var(--text3);font-size:11px}
+.cook-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.step{font-size:12px;color:var(--text2);line-height:1.6}
+.step strong{color:var(--text);font-weight:500}
+.divider{height:0.5px;background:var(--border);margin:5px 0}
+.tip{font-size:12px;background:var(--green-light);color:var(--green);border-radius:var(--radius-sm);padding:7px 10px;margin-top:3px;line-height:1.5}
+.warn{font-size:12px;background:var(--coral-light);color:var(--coral);border-radius:var(--radius-sm);padding:7px 10px;margin-bottom:10px;line-height:1.5}
+.day-note{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.total-bar{display:flex;gap:8px;flex-wrap:wrap;padding:8px 10px;background:var(--bg2);border-radius:var(--radius-sm);margin-top:4px;border:0.5px solid var(--border);font-size:11px;color:var(--text2)}
+.total-bar strong{color:var(--text);font-weight:500}
+
+/* Schedule blocks */
+.block{display:flex;align-items:stretch;border-radius:var(--radius-sm);overflow:hidden;border:0.5px solid var(--border);margin-bottom:5px}
+.block-time{min-width:96px;padding:8px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;border-right:0.5px solid var(--border);line-height:1.3;color:var(--text) !important}
+.block-body{flex:1;padding:8px 11px;display:flex;flex-direction:column;gap:1px;justify-content:center}
+.block-label{font-size:13px;font-weight:500}
+.block-sub{font-size:11px;color:var(--text2)}
+.bs{background:var(--purple-light);border-color:var(--purple-mid)}.bs .block-time{background:var(--purple-mid);color:var(--purple);border-color:var(--purple-mid)}.bs .block-label{color:var(--purple)}
+.bw{background:var(--blue-light);border-color:var(--blue-mid)}.bw .block-time{background:var(--blue-mid);color:var(--blue);border-color:var(--blue-mid)}.bw .block-label{color:var(--blue)}
+.be{background:var(--green-light);border-color:var(--green-mid)}.be .block-time{background:var(--green-mid);color:var(--green);border-color:var(--green-mid)}.be .block-label{color:var(--green)}
+.bm{background:var(--amber-light);border-color:var(--amber-mid)}.bm .block-time{background:var(--amber-mid);color:var(--amber);border-color:var(--amber-mid)}.bm .block-label{color:var(--amber)}
+.bf{background:var(--pink-light);border-color:var(--pink-mid)}.bf .block-time{background:var(--pink-mid);color:var(--pink);border-color:var(--pink-mid)}.bf .block-label{color:var(--pink)}
+.br{background:var(--teal-light);border-color:var(--teal-mid)}.br .block-time{background:var(--teal-mid);color:var(--teal);border-color:var(--teal-mid)}.br .block-label{color:var(--teal)}
+.bo{background:var(--coral-light);border-color:var(--coral-mid)}.bo .block-time{background:var(--coral-mid);color:var(--coral);border-color:var(--coral-mid)}.bo .block-label{color:var(--coral)}
+
+/* Section labels */
+.section-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin:14px 0 6px;padding:0 2px}
+
+/* Workout */
+.ex-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.ex-row:last-child{border-bottom:none}
+.ex-info{flex:1}
+.ex-name{font-size:13px;font-weight:500}
+.ex-note{font-size:11px;color:var(--text2);margin-top:1px;line-height:1.4}
+.ex-sets{font-size:12px;color:var(--text2);white-space:nowrap;padding-top:1px}
+.wk-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);background:var(--purple-light);color:var(--purple);white-space:nowrap}
+
+/* Rules */
+.rule-card{padding:12px;border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;background:var(--bg)}
+.rule-title{font-size:13px;font-weight:500;margin-bottom:4px}
+.rule-detail{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* Tag colors */
+.t1{background:var(--green-light);color:var(--green)}
+.t2{background:var(--blue-light);color:var(--blue)}
+.t3{background:var(--purple-light);color:var(--purple)}
+.t4{background:var(--amber-light);color:var(--amber)}
+.ts{background:var(--teal-light);color:var(--teal)}
+.tc{background:var(--coral-light);color:var(--coral)}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+</style>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIk15IFdlZWsiLCAic2hvcnRfbmFtZSI6ICJNeSBXZWVrIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyNzUwMEEiLCAidGhlbWVfY29sb3IiOiAiIzI3NTAwQSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCJ9">
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>My Week</h1>
+    <span class="header-day" id="header-day"></span>
+  </div>
+</div>
+
+<div class="screens">
+  <div class="screen active" id="screen-schedule">
+    <div class="day-tabs" id="sched-tabs"></div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:#534AB7"></div>Sleep</div>
+      <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Work</div>
+      <div class="leg"><div class="leg-dot" style="background:#3B6D11"></div>Eat</div>
+      <div class="leg"><div class="leg-dot" style="background:#854F0B"></div>Move</div>
+      <div class="leg"><div class="leg-dot" style="background:#993556"></div>Free</div>
+      <div class="leg"><div class="leg-dot" style="background:#0F6E56"></div>Routine</div>
+      <div class="leg"><div class="leg-dot" style="background:#993C1D"></div>Out</div>
+    </div>
+    <div id="sched-content"></div>
+  </div>
+
+  <div class="screen" id="screen-food">
+    <div class="day-tabs" id="food-tabs"></div>
+    <div id="food-content"></div>
+  </div>
+
+  <div class="screen" id="screen-tasks">
+    <div id="tasks-content"></div>
+  </div>
+
+  <div class="screen" id="screen-workout">
+    <div id="workout-content"></div>
+  </div>
+
+  <div class="screen" id="screen-rules">
+    <div id="rules-content"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="switchScreen('schedule',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Schedule
+  </button>
+  <button class="nav-btn" onclick="switchScreen('food',this)">
+    <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+    Food
+  </button>
+  <button class="nav-btn" onclick="switchScreen('tasks',this)">
+    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></svg>
+    Tasks
+  </button>
+  <button class="nav-btn" onclick="switchScreen('workout',this)">
+    <svg viewBox="0 0 24 24"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+    Workout
+  </button>
+  <button class="nav-btn" onclick="switchScreen('rules',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Rules
+  </button>
+</nav>
+
+<script>
+const DAYS=['sat','sun','mon','tue','wed','thu','fri'];
+const DLABELS={sat:'Sat',sun:'Sun ⚠',mon:'Mon ⚠',tue:'Tue',wed:'Wed',thu:'Thu',fri:'Fri'};
+
+const schedData={
+  sat:{note:'Free afternoon. Cook rice + lentil batch today — covers Sun/Mon.',blocks:[
+    {t:'7:00–8:00 AM',l:'Home + wind-down',s:'Decompress from Fri shift',c:'br'},
+    {t:'8:00 AM–2:00 PM',l:'Sleep',s:'Blackout, phone silent',c:'bs'},
+    {t:'2:00–2:30 PM',l:'Wake + freshen up',s:'Wash face, hydrate',c:'br'},
+    {t:'2:30–3:00 PM',l:'Meal',s:'First proper meal after waking',c:'be'},
+    {t:'3:00–4:00 PM',l:'Light movement',s:'Stretch / bodyweight / walk',c:'bm'},
+    {t:'4:00–7:00 PM',l:'Free time',s:'Music, fashion, interests',c:'bf'},
+    {t:'7:00–7:30 PM',l:'Dinner',s:'Proper evening meal',c:'be'},
+    {t:'7:30–10:00 PM',l:'Free time',s:'Relax, low effort',c:'bf'},
+    {t:'10:00–11:00 PM',l:'Wind-down',s:'Dim lights, calm content',c:'br'},
+    {t:'11:00 PM–12 AM',l:'Get ready for shift',s:'Freshen up + light snack',c:'br'},
+    {t:'12:00–7:00 AM',l:'Work — shift 1',s:'Night shift into Sunday',c:'bw'},
+  ]},
+  sun:{warn:'Survival day. Two shifts, 12 hrs apart. Sleep is the only priority.',note:'Shift 1 ends 7 AM. Shift 2 starts 7 PM.',blocks:[
+    {t:'7:00–7:30 AM',l:'Home + decompress',s:'Get back fast',c:'br'},
+    {t:'7:30–8:00 AM',l:'Small snack only',s:'Yogurt — then straight to sleep',c:'be'},
+    {t:'8:00 AM–5:00 PM',l:'Sleep — max priority',s:'9 hr window. Blackout. Silent.',c:'bs'},
+    {t:'5:00–5:30 PM',l:'Wake + shower',s:'Quick — get ready for shift',c:'br'},
+    {t:'5:30–6:30 PM',l:'Pre-shift meal',s:'Eat properly before long shift',c:'be'},
+    {t:'6:30–7:00 PM',l:'Buffer',s:'Calm, no rushing',c:'br'},
+    {t:'7:00 PM–7:00 AM',l:'Work — shift 2',s:'Long night into Monday',c:'bw'},
+  ]},
+  mon:{warn:'Near-survival. Ends 7 AM, back at 5 PM. Sleep immediately.',note:'Only 10 hrs between shifts.',blocks:[
+    {t:'7:00–7:30 AM',l:'Home + decompress',s:'No lingering',c:'br'},
+    {t:'7:30–8:00 AM',l:'Small snack',s:'Quick bite then sleep',c:'be'},
+    {t:'8:00 AM–3:00 PM',l:'Sleep',s:'7 hrs. Blackout. Silent.',c:'bs'},
+    {t:'3:00–3:30 PM',l:'Wake + freshen up',s:'Shower, get ready',c:'br'},
+    {t:'3:30–4:30 PM',l:'Pre-shift meal',s:'Only real meal today',c:'be'},
+    {t:'4:30–5:00 PM',l:'Buffer',s:'Light stretch, no rush',c:'br'},
+    {t:'5:00 PM–7:00 AM',l:'Work',s:'Long night shift',c:'bw'},
+  ]},
+  tue:{note:'~17 hrs off. Cook fresh rice batch today.',blocks:[
+    {t:'7:00–7:30 AM',l:'Home + wind-down',s:'Ease off screens',c:'br'},
+    {t:'7:30–8:00 AM',l:'Light snack',s:'Small bite before sleep',c:'be'},
+    {t:'8:00 AM–3:00 PM',l:'Sleep',s:'7 hrs',c:'bs'},
+    {t:'3:00–3:30 PM',l:'Wake + shower',s:'Freshen up properly',c:'br'},
+    {t:'3:30–4:00 PM',l:'Meal',s:'First proper meal after waking',c:'be'},
+    {t:'4:00–5:00 PM',l:'Light movement',s:'Walk outside / stretch / bodyweight',c:'bm'},
+    {t:'5:00–8:00 PM',l:'Free time',s:'Resume + music/fashion + relax',c:'bf'},
+    {t:'8:00–8:30 PM',l:'Dinner',s:'Proper evening meal',c:'be'},
+    {t:'8:30–10:30 PM',l:'Free time',s:'Relax, low effort',c:'bf'},
+    {t:'10:30–11:30 PM',l:'Wind-down',s:'Dim lights, calm',c:'br'},
+    {t:'11:30 PM–12 AM',l:'Ready for shift',s:'Freshen up + snack',c:'br'},
+    {t:'12:00–7:00 AM',l:'Work',s:'Night shift into Wednesday',c:'bw'},
+  ]},
+  wed:{note:'~17 hrs off. Same rhythm as Tuesday.',blocks:[
+    {t:'7:00–7:30 AM',l:'Home + wind-down',s:'No screens right away',c:'br'},
+    {t:'7:30–8:00 AM',l:'Light snack',s:'Small bite before sleep',c:'be'},
+    {t:'8:00 AM–3:00 PM',l:'Sleep',s:'7 hrs',c:'bs'},
+    {t:'3:00–3:30 PM',l:'Wake + shower',s:'Freshen up',c:'br'},
+    {t:'3:30–4:00 PM',l:'Meal',s:'First proper meal after waking',c:'be'},
+    {t:'4:00–5:00 PM',l:'Light movement',s:'Stretch / walk / bodyweight',c:'bm'},
+    {t:'5:00–8:00 PM',l:'Free time',s:'Apply to jobs + interests + relax',c:'bf'},
+    {t:'8:00–8:30 PM',l:'Dinner',s:'Proper meal',c:'be'},
+    {t:'8:30–10:30 PM',l:'Free time',s:'Relax',c:'bf'},
+    {t:'10:30–11:30 PM',l:'Wind-down',s:'Calm down',c:'br'},
+    {t:'11:30 PM–12 AM',l:'Ready for shift',s:'Freshen up + snack',c:'br'},
+    {t:'12:00–7:00 AM',l:'Work',s:'Night shift into Thursday',c:'bw'},
+  ]},
+  thu:{note:'Free from 7 AM until Fri midnight — your biggest free window.',blocks:[
+    {t:'7:00–7:30 AM',l:'Home + decompress',s:"You're free now",c:'br'},
+    {t:'7:30–8:00 AM',l:'Light snack',s:'Small bite before sleep',c:'be'},
+    {t:'8:00 AM–2:00 PM',l:'Sleep',s:'6 hrs — recover before going out',c:'bs'},
+    {t:'2:00–3:00 PM',l:'Wake + full get-ready',s:'Take your time, feel yourself',c:'br'},
+    {t:'3:00–3:30 PM',l:'Meal before going out',s:'Eat before heading out',c:'be'},
+    {t:'3:30 PM+',l:'Go out — no curfew',s:'Hang out, explore, enjoy fully',c:'bo'},
+  ]},
+  fri:{note:'Full recovery day. Next shift: midnight.',blocks:[
+    {t:'Sleep in',l:'Wake naturally',s:'No alarm — full recovery',c:'bs'},
+    {t:'After waking',l:'Morning routine',s:'Shower, take your time',c:'br'},
+    {t:'After routine',l:'Brunch',s:'First meal, no rush',c:'be'},
+    {t:'Mid-day',l:'Light movement',s:'Walk outside if possible',c:'bm'},
+    {t:'Afternoon',l:'Free time',s:'Music, fashion, relax',c:'bf'},
+    {t:'Evening',l:'Dinner + relax',s:'Eat well, fully unwind',c:'be'},
+    {t:'10:00–11:00 PM',l:'Wind-down',s:'Prep mentally for shift',c:'br'},
+    {t:'11:00 PM–12 AM',l:'Get ready for shift',s:'Freshen up + light snack',c:'br'},
+    {t:'12:00–7:00 AM',l:'Work',s:'Night shift into Saturday',c:'bw'},
+  ]}
+};
+
+const foodData={
+  sat:{note:'Cook rice + lentil batch today. Covers Sat/Sun/Mon.',meals:[
+    {tag:'Breakfast',tc:'t1',name:'Danish + greek yogurt',cal:'~440',ings:['Danish or pastry (1 piece)','Greek yogurt (1 cup ~150g)','Water or Coke Zero'],cook:[],tip:"Yogurt balances the pastry — don't skip it."},
+    {tag:'Main meal',tc:'t2',name:'Garlic soy rice bowl + chicken + broccoli',cal:'~540',ings:['Cooked rice (1.5 cups)','Rotisserie chicken pulled (120g)','Broccoli microwaved (big handful)','Soy sauce + garlic powder + chilli flakes'],cook:['Cook rice batch: 2 cups dry in rice cooker.','Microwave broccoli with splash of water, 3 min.','Pull chicken off the bone, store rest covered in fridge.','Mix soy + garlic powder + chilli flakes, drizzle over bowl.'],tip:''},
+    {tag:'Pre-shift',tc:'t3',name:'Cheesy mug eggs + wheat biscuits',cal:'~380',ings:['2 eggs','Small handful cheese','Salt + chilli flakes','4 wheat biscuits on the side'],cook:['Crack eggs into mug, add cheese + seasoning.','Microwave 90 sec — pause at 45 sec, stir, finish.','Eat with biscuits on the side.'],tip:''},
+    {tag:'Shift snack',tc:'ts',name:'Popcorn + yogurt (pack before leaving)',cal:'~190',ings:['1 popcorn bag','1 greek yogurt','Coke Zero'],cook:[],tip:"Pack before leaving. Don't buy at work."},
+  ],total:[['Breakfast','~440'],['Main','~540'],['Pre-shift','~380'],['Snack','~190'],['Total','~1,550 cal']]},
+  sun:{warn:'Survival day. Small snack only before sleep. One real meal before shift 2.',meals:[
+    {tag:'Post-shift snack',tc:'ts',name:'Greek yogurt + wheat biscuits',cal:'~160',ings:['Greek yogurt (1 cup)','3–4 wheat biscuits','Water only — no Coke Zero before sleep'],cook:[],tip:'Small only. Straight to sleep after.'},
+    {tag:'Pre-shift 2',tc:'t2',name:'Lentil + frozen veg bowl',cal:'~480',ings:['Cooked lentils (1 cup)','Frozen veg microwaved (big handful)','Soy sauce + garlic powder + chilli flakes','3–4 wheat biscuits on the side'],cook:['Reheat lentils 2 min in microwave.','Microwave veg 2–3 min with splash of water.','Combine + season well.'],tip:"Different from Saturday's rice — heavier protein, keeps you through the long shift."},
+    {tag:'Shift snack',tc:'ts',name:'Chicken wrap (make before leaving) + popcorn',cal:'~400',ings:['1 tortilla','Rotisserie chicken pulled','Spinach raw','Buffalo sauce (1 tbsp)','1 popcorn bag'],cook:['Lay tortilla, add chicken + spinach + buffalo sauce, roll tight.','Microwave 45 sec. Pack with popcorn bag.'],tip:'Eat wrap mid-shift, popcorn later in shift.'},
+  ],total:[['Post-shift','~160'],['Pre-shift','~480'],['Shift snack','~400'],['Total','~1,040 (survival day)']]},
+  mon:{warn:'Near-survival. One real meal only — pasta before shift.',meals:[
+    {tag:'Post-shift snack',tc:'ts',name:'Wheat biscuits + yogurt',cal:'~160',ings:['Greek yogurt (1 cup)','3–4 wheat biscuits','Water'],cook:[],tip:'Small only, then sleep immediately.'},
+    {tag:'Pre-shift',tc:'t2',name:'Pasta with marinara + shredded chicken',cal:'~580',ings:['Pasta (~80g dry)','Marinara sauce (half jar)','Rotisserie chicken shredded (100g)','Chilli flakes on top'],cook:['Add pasta to microwave bowl, cover with water by 2 inches.','Microwave 10–12 min. Stir at halfway. Drain carefully.','Heat marinara in a mug 1 min.','Mix pasta + sauce + chicken. Top with chilli flakes.'],tip:'Pasta in microwave works. Stir once halfway, drain carefully.'},
+    {tag:'Shift snack',tc:'ts',name:'Popcorn + wheat biscuits',cal:'~170',ings:['1 popcorn bag','3–4 wheat biscuits','Coke Zero'],cook:[],tip:''},
+  ],total:[['Post-shift','~160'],['Pre-shift','~580'],['Shift snack','~170'],['Total','~910 (survival day)']]},
+  tue:{note:'Cook fresh rice batch today. Covers Tue + Wed.',meals:[
+    {tag:'Breakfast',tc:'t1',name:'Pastry + greek yogurt',cal:'~440',ings:['Danish or bread (1 piece)','Greek yogurt (1 cup)','Water or Coke Zero'],cook:[],tip:''},
+    {tag:'Main meal',tc:'t2',name:'Spicy kimchi rice + egg + spinach',cal:'~520',ings:['Cooked rice (1.5 cups — cook fresh batch)','1 egg microwave scrambled','Spinach big handful microwaved','Kimchi on the side','Soy sauce + chilli flakes'],cook:['Cook fresh rice: 2 cups dry in rice cooker.','Crack egg into mug, microwave 60 sec, stir into rice.','Microwave spinach 1 min until wilted, add to bowl.','Season with soy + chilli. Kimchi on the side — do not mix in.'],tip:"Completely different flavour from Saturday's bowl."},
+    {tag:'Dinner',tc:'t3',name:'Alfredo pasta + frozen veg',cal:'~550',ings:['Pasta (~80g dry)','Alfredo sauce (half jar)','Frozen veg microwaved (handful)','Chilli flakes + garlic powder'],cook:['Microwave pasta in water 10–12 min, drain.','Microwave veg 2–3 min separately.','Heat alfredo in mug 1 min.','Combine everything + season.'],tip:"Different sauce from Monday's marinara."},
+    {tag:'Shift snack',tc:'ts',name:'Popcorn + wheat biscuits',cal:'~190',ings:['1 popcorn bag','3–4 wheat biscuits','Coke Zero'],cook:[],tip:''},
+  ],total:[['Breakfast','~440'],['Main','~520'],['Dinner','~550'],['Snack','~190'],['Total','~1,700 cal']]},
+  wed:{note:"Use Tuesday's rice batch. Lentils from Sunday if any left.",meals:[
+    {tag:'Breakfast',tc:'t1',name:'Pastry + yogurt + wheat biscuits',cal:'~500',ings:['Danish or bread (1 piece)','Greek yogurt (1 cup)','2–3 wheat biscuits','Water'],cook:[],tip:'Slightly bigger breakfast — more free time ahead.'},
+    {tag:'Main meal',tc:'t2',name:'Chicken rice bowl + buffalo-ranch drizzle',cal:'~530',ings:['Cooked rice (1.5 cups)','Rotisserie chicken (120g)','Frozen veg microwaved (handful)','Buffalo sauce (1 tbsp) + ranch (half tbsp) mixed'],cook:['Reheat rice 2 min with splash of water.','Microwave veg 2–3 min.','Pull chicken over rice + veg.','Mix buffalo + ranch in small cup, drizzle over top.'],tip:"Buffalo-ranch makes this totally different from Saturday's soy bowl."},
+    {tag:'Evening meal',tc:'t3',name:'Lentil bowl + spinach + egg',cal:'~420',ings:['Cooked lentils (1 cup)','Spinach big handful','1 egg scrambled in mug','Garlic powder + salt + chilli flakes','3–4 wheat biscuits on the side'],cook:['Reheat lentils 2 min.','Microwave spinach 1 min separately.','Scramble egg in mug 90 sec.','Combine + season. Eat with biscuits.'],tip:''},
+    {tag:'Shift snack',tc:'ts',name:'Chicken bites + popcorn',cal:'~280',ings:['Frozen breaded chicken bites (small portion)','1 popcorn bag','Ranch or donkey sauce (1 tbsp max)'],cook:['Microwave chicken bites 2–3 min until hot.','Pack with popcorn bag for shift.'],tip:'Chicken bites as shift snack only on Wednesday.'},
+  ],total:[['Breakfast','~500'],['Main','~530'],['Evening','~420'],['Snack','~280'],['Total','~1,730 cal']]},
+  thu:{note:'Cheat day. Eating outside. No home cooking needed.',meals:[
+    {tag:'Post-shift snack',tc:'ts',name:'Small snack before sleep',cal:'~150',ings:['Greek yogurt (1 cup) OR 3–4 wheat biscuits','Water only'],cook:[],tip:"Keep it small — you'll eat big outside later."},
+    {tag:'Outside',tc:'tc',name:'Eat whatever you want',cal:'Your call',ings:['No rules today','Enjoy yourself fully','You\'ve earned it — consistent all week'],cook:[],tip:"One thing: drink water alongside whatever you eat. Dehydration + eating out will wreck you the next day."},
+  ],total:[['Post-shift','~150'],['Outside','enjoy it'],['Total','cheat day — no counting']]},
+  fri:{note:'Full recovery day. Next shift midnight.',meals:[
+    {tag:'Brunch',tc:'t1',name:'Egg + cheese tortilla wrap',cal:'~430',ings:['1 tortilla','2 eggs scrambled in mug','Small handful cheese','Spinach raw','Kimchi on the side'],cook:['Crack 2 eggs into mug, add cheese, microwave 90 sec pausing at 45 sec to stir.','Lay tortilla flat, add scrambled egg + raw spinach.','Roll tight. Microwave 30 sec optional. Eat with kimchi.'],tip:"Completely different from any other day's breakfast."},
+    {tag:'Lunch',tc:'t2',name:'Marinara pasta + spinach',cal:'~500',ings:['Pasta (~80g dry)','Marinara sauce','Spinach (stir in raw while hot)','Chilli flakes + garlic powder + cheese (1 tbsp)'],cook:['Microwave pasta in water 10–12 min, drain.','Heat marinara in mug 1 min.','Mix pasta + sauce, stir in raw spinach (wilts from heat).','Top with cheese + chilli flakes.'],tip:'Spinach wilts perfectly from pasta heat — no extra cooking step.'},
+    {tag:'Pre-shift',tc:'t3',name:'Rice + lentil mix + egg + veg',cal:'~520',ings:['Cooked rice (1 cup)','Cooked lentils (half cup)','1 egg scrambled in mug','Frozen veg microwaved (handful)','Soy sauce + garlic powder + chilli flakes'],cook:['Reheat rice + lentils together 2 min.','Microwave veg separately 2 min.','Scramble egg in mug 90 sec.','Mix everything together, season well.'],tip:'Rice + lentil = complete protein. Great pre-shift fuel.'},
+    {tag:'Shift snack',tc:'ts',name:'Popcorn + yogurt + wheat biscuits',cal:'~280',ings:['1 popcorn bag','1 greek yogurt','3 wheat biscuits'],cook:[],tip:''},
+  ],total:[['Brunch','~430'],['Lunch','~500'],['Pre-shift','~520'],['Snack','~280'],['Total','~1,730 cal']]},
+};
+
+const tasksData=[
+  {section:'Job search — shift (quiet moments)',items:[
+    {icon:'🔍',title:'Browse + save job listings',when:'Every shift, 15–20 min',detail:'Indeed, LinkedIn, Glassdoor. Save roles — don\'t apply yet.'},
+    {icon:'🏢',title:'Research one company',when:'Every shift, 10–15 min',detail:'Look up one saved job. Culture, reviews on Glassdoor.'},
+    {icon:'💼',title:'LinkedIn profile upkeep',when:'Every shift, 10 min',detail:'Update a section, add a skill, one line about current role.'},
+  ]},
+  {section:'Job search — free windows',items:[
+    {icon:'📄',title:'Resume — one section',when:'Tue 5–6 PM / Wed 5–6 PM',detail:'Tue: work history. Wed: skills. Thu: review + tailor for one job.'},
+    {icon:'📤',title:'Apply to 2–3 jobs',when:'Wed 6–7 PM',detail:'Use listings saved during shifts. Tailor slightly per application.'},
+    {icon:'📋',title:'Track applications',when:'Thu 3–4 PM (before going out)',detail:'Check status, follow up if needed, update LinkedIn. Done for the week.'},
+    {icon:'🎤',title:'Interview prep',when:'Wed shift — quiet moments',detail:'Write answers to 2 questions. Say them out loud once.'},
+  ]},
+  {section:'Music + fashion learning',items:[
+    {icon:'▶️',title:'One YouTube documentary',when:'Tue/Wed/Fri evenings, 20–30 min',detail:'Search "[genre] history" or "[artist] documentary". One per week.'},
+    {icon:'📰',title:'Read one article',when:'Every shift, 10 min',detail:'Highsnobiety, Hypebeast, Pitchfork. Read properly — not a scroll.'},
+    {icon:'👥',title:'Curated creator check',when:'Daily, 15 min max',detail:'Check your 5–10 saved accounts. Close the app after. Not open scroll.'},
+    {icon:'👔',title:'Study one outfit',when:'Daily, 10 min',detail:'Pinterest or Instagram. Silhouette, colors, how pieces combine.'},
+  ]},
+  {section:'Phone rules',items:[
+    {icon:'📵',title:'No phone first 30 min after waking',when:'Every day',detail:"Do your routine first. Don't dump social media into your freshest brain."},
+    {icon:'🌙',title:'No phone last 30 min before sleep',when:'Every day',detail:'Screen light wrecks sleep quality, especially after night shifts.'},
+    {icon:'⏱',title:'15-min timer on social media',when:'Every time you open it',detail:'When it goes off, close the app. You have to consciously choose to stay.'},
+    {icon:'💧',title:'Water before reaching for food',when:'Any craving during shift',detail:'Drink a glass, wait 5 min. Still hungry? Eat. If not — just dehydration.'},
+  ]},
+];
+
+const workoutData=[
+  {label:'Tue / Wed / Fri',badge:'20 min',title:'Full body room workout',exercises:[
+    {name:'Jumping jacks',sets:'2 × 30 sec',note:'Warm-up. Gets blood moving before you start.'},
+    {name:'Bodyweight squats',sets:'3 × 15 reps',note:'Slow down, pause at the bottom for 1 second.'},
+    {name:'Push-ups',sets:'3 × 10 reps',note:'On knees is fine to start. Keep back straight.'},
+    {name:'Reverse lunges',sets:'2 × 10 each leg',note:'Step back, back knee nearly touches floor.'},
+    {name:'Plank hold',sets:'3 × 20–30 sec',note:'Elbows down. Breathe. Never hold your breath.'},
+    {name:'Glute bridges',sets:'3 × 15 reps',note:'Lie on back, feet flat, push hips up and squeeze.'},
+    {name:'Standing calf raises',sets:'2 × 20 reps',note:'Use a wall for balance if needed.'},
+  ],tip:'Rest 45 sec between sets. No equipment needed. Takes about 3–4 sqm of floor space.'},
+  {label:'Sat afternoon',badge:'10 min',title:'Light activation — pre-shift',exercises:[
+    {name:'Neck rolls',sets:'5 each direction',note:'Slow and controlled, no rushing.'},
+    {name:'Arm circles',sets:'10 each direction',note:'Loosens up shoulders before the shift.'},
+    {name:'Hip circles',sets:'10 each direction',note:'Hands on hips, big slow circles.'},
+    {name:'Standing toe touches',sets:'10 reps',note:'Go slow — feel the stretch in hamstrings.'},
+    {name:'Bodyweight squats',sets:'2 × 10 reps',note:'Just to warm up legs before a long standing shift.'},
+  ],tip:"This is activation only — not a workout. So your body doesn't go into a 7-hr shift completely cold and stiff."},
+  {label:'Thu (optional)',badge:'Optional',title:'Recovery walk',exercises:[
+    {name:'Walk outside',sets:'20–30 min',note:'Before going out. No pace target, no goal. Just fresh air and legs moving.'},
+  ],tip:"Thursday is your day. Only do this if you feel like it — it's genuinely optional."},
+  {label:'Sun / Mon',badge:'Rest',title:'No movement — rest only',exercises:[
+    {name:'Nothing at all',sets:'—',note:'Your body is running on broken sleep between double shifts. Movement makes recovery worse, not better.'},
+  ],tip:'Rest IS the recovery on these two days. No guilt.'},
+];
+
+const rulesData=[
+  {section:'Eating rules',items:[
+    {title:'Eat every 3–4 hours — not when bored',detail:'Night shifts break hunger signals. Set a phone reminder every 3–4 hrs. Eat at those times, not constantly.'},
+    {title:'Protein or fiber at every eating moment',detail:"Never eat a carb alone. Always pair: popcorn + yogurt, biscuits + chicken, wrap + kimchi. Stops the spike-crash cycle."},
+    {title:'No heavy food within 2 hrs of sleep',detail:'After shift ends: small snack only (yogurt, biscuits). Real meal after you wake up. Heavy food = worse sleep quality.'},
+    {title:'Sauces are the biggest hidden calorie trap',detail:'Ranch + donkey sauce = ~100 cal per tbsp. Buffalo is lower — use freely. Soy + garlic + chilli flakes = near zero cal.'},
+    {title:'Mango ice cream: after a meal, one serving',detail:'Not as a standalone snack. Not within 1 hr of sleep. Scoop it, put the container away before you eat.'},
+    {title:'Coke Zero: max 1–2 cans per day',detail:"Fine during shifts. Don't use it to skip meals — it kills appetite then you overeat later."},
+  ]},
+  {section:'Cooking guide',items:[
+    {title:'Saturday: cook rice + lentil batch',detail:'2 cups dry rice in rice cooker. 1 cup lentils + 2.5 cups water, microwave 15–18 min. Covers Sat/Sun/Mon.'},
+    {title:'Tuesday: fresh rice batch + pull all chicken',detail:'2 cups dry rice in cooker. Pull ALL chicken off the bone day 1, store in covered container. Grab-and-go all week.'},
+    {title:'Microwave pasta: bowl + water, 10–12 min',detail:'Cover pasta with water by 2 inches. Microwave 10–12 min, stir halfway. Drain carefully. Works perfectly.'},
+    {title:'Mug eggs: 2 eggs + cheese + seasoning, 90 sec',detail:'Crack into mug, add cheese + salt + chilli. Microwave 90 sec — pause at 45 sec, stir, finish. One thing to wash.'},
+    {title:'Frozen veg: bowl + splash water, 2–3 min',detail:'Pour into bowl, add 2 tbsp water, cover with a plate, microwave 2–3 min. Season with soy + garlic + chilli.'},
+  ]},
+];
+
+let curSchedDay='sat', curFoodDay='sat';
+
+function buildTabs(containerId, activeDay, clickFn){
+  document.getElementById(containerId).innerHTML=DAYS.map(d=>{
+    let cls='dt';
+    if(d==='sun'||d==='mon')cls+=' brutal';
+    if(d==='thu')cls+=' cheat';
+    if(d===activeDay)cls+=' active';
+    return `<button class="${cls}" onclick="${clickFn}('${d}')">${DLABELS[d]}</button>`;
+  }).join('');
+}
+
+function renderSched(day){
+  curSchedDay=day;
+  buildTabs('sched-tabs',day,'renderSched');
+  const d=schedData[day];
+  let h='';
+  if(d.warn) h+=`<div class="warn">⚠ ${d.warn}</div>`;
+  else h+=`<div class="day-note">${d.note}</div>`;
+  d.blocks.forEach(b=>{
+    h+=`<div class="block ${b.c}"><div class="block-time">${b.t}</div><div class="block-body"><div class="block-label">${b.l}</div><div class="block-sub">${b.s}</div></div></div>`;
+  });
+  document.getElementById('sched-content').innerHTML=h;
+}
+
+function renderFood(day){
+  curFoodDay=day;
+  buildTabs('food-tabs',day,'renderFood');
+  const d=foodData[day];
+  let h='';
+  if(d.warn) h+=`<div class="warn">⚠ ${d.warn}</div>`;
+  else if(d.note) h+=`<div class="day-note">${d.note}</div>`;
+  d.meals.forEach(m=>{
+    h+=`<div class="card"><div class="card-head"><span class="tag ${m.tc}">${m.tag}</span><span class="card-title">${m.name}</span><span class="card-cal">${m.cal} cal</span></div><div class="card-body">`;
+    m.ings.forEach(i=>h+=`<div class="item">${i}</div>`);
+    if(m.cook.length){
+      h+=`<div class="divider"></div><div class="cook-label">How to cook</div>`;
+      m.cook.forEach((s,i)=>h+=`<div class="step"><strong>${i+1}.</strong> ${s}</div>`);
+    }
+    if(m.tip) h+=`<div class="tip">${m.tip}</div>`;
+    h+=`</div></div>`;
+  });
+  h+=`<div class="total-bar">${d.total.map(t=>`<div>${t[0]} <strong>${t[1]}</strong></div>`).join('')}</div>`;
+  document.getElementById('food-content').innerHTML=h;
+}
+
+function renderTasks(){
+  let h='';
+  tasksData.forEach(sec=>{
+    h+=`<div class="section-label">${sec.section}</div>`;
+    sec.items.forEach(item=>{
+      h+=`<div class="rule-card"><div class="rule-title">${item.icon} ${item.title}</div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;">${item.when}</div><div class="rule-detail">${item.detail}</div></div>`;
+    });
+  });
+  document.getElementById('tasks-content').innerHTML=h;
+}
+
+function renderWorkout(){
+  let h='';
+  workoutData.forEach(w=>{
+    h+=`<div class="card"><div class="card-head"><span class="wk-badge">${w.label}</span><span class="card-title">${w.title}</span><span class="card-cal">${w.badge}</span></div><div class="card-body">`;
+    w.exercises.forEach(e=>{
+      h+=`<div class="ex-row"><div class="ex-info"><div class="ex-name">${e.name}</div><div class="ex-note">${e.note}</div></div><div class="ex-sets">${e.sets}</div></div>`;
+    });
+    if(w.tip) h+=`<div class="tip">${w.tip}</div>`;
+    h+=`</div></div>`;
+  });
+  document.getElementById('workout-content').innerHTML=h;
+}
+
+function renderRules(){
+  let h='';
+  rulesData.forEach(sec=>{
+    h+=`<div class="section-label">${sec.section}</div>`;
+    sec.items.forEach(item=>{
+      h+=`<div class="rule-card"><div class="rule-title">${item.title}</div><div class="rule-detail">${item.detail}</div></div>`;
+    });
+  });
+  document.getElementById('rules-content').innerHTML=h;
+}
+
+function switchScreen(name, btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setHeaderDay(){
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('header-day').textContent=days[new Date().getDay()];
+}
+
+renderSched('sat');
+renderFood('sat');
+renderTasks();
+renderWorkout();
+renderRules();
+setHeaderDay();
+</script>
+</body>
+</html>
